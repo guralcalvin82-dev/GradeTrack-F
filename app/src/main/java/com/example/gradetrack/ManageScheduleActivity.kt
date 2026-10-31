@@ -51,7 +51,7 @@ class ManageScheduleActivity : AppCompatActivity() {
         btnSem1 = findViewById(R.id.btnSem1)
         btnSem2 = findViewById(R.id.btnSem2)
 
-        findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<Button>(R.id.btnBack)?.setOnClickListener { finish() }
         findViewById<Button>(R.id.btnAddSchedule).setOnClickListener { showScheduleDialog(null) }
 
         // Semester buttons (1ST SEMESTER / 2ND SEMESTER)

@@ -2,8 +2,12 @@ package com.example.gradetrack
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
+import android.widget.CheckBox
+import android.widget.TextView
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import com.google.android.material.textfield.TextInputEditText
 
@@ -20,12 +24,26 @@ class LoginActivity : AppCompatActivity() {
         val etUserId = findViewById<TextInputEditText>(R.id.etUserId)
         val etPassword = findViewById<TextInputEditText>(R.id.etPassword)
         val btnLogin = findViewById<Button>(R.id.btnLogin)
-        val btnCreateAccount = findViewById<Button>(R.id.btnCreateAccount)
+        val cbAgreement = findViewById<CheckBox>(R.id.cbAgreement)
+        val tvReadTerms = findViewById<TextView>(R.id.tvReadTerms)
+        val tvAgreementText = findViewById<TextView>(R.id.tvAgreementText)
 
-        btnCreateAccount.setOnClickListener {
-            val intent = Intent(this, CreateAccountActivity::class.java)
-            startActivity(intent)
+        val showPrivacyDialog = {
+            AlertDialog.Builder(this)
+                .setTitle("Data Privacy Disclaimer & Consent")
+                .setMessage(
+                    "By using GradeTrack, you agree and consent to the collection, storage, and processing of your personal information, Student/Faculty ID, course, section, and academic grades within this application.\n\n" +
+                    "Your data is securely managed by the system administrator and used strictly for academic tracking, scheduling, and grading purposes in accordance with data privacy standards."
+                )
+                .setPositiveButton("I Accept") { _, _ ->
+                    cbAgreement.isChecked = true
+                }
+                .setNegativeButton("Close", null)
+                .show()
         }
+
+        tvReadTerms?.setOnClickListener { showPrivacyDialog() }
+        tvAgreementText?.setOnClickListener { showPrivacyDialog() }
 
         btnLogin.setOnClickListener {
             val userId = etUserId.text.toString().trim()
@@ -33,6 +51,16 @@ class LoginActivity : AppCompatActivity() {
 
             if (userId.isEmpty() || password.isEmpty()) {
                 Toast.makeText(this, "Please enter User ID and Password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+
+            if (!cbAgreement.isChecked) {
+                Toast.makeText(
+                    this,
+                    "Please check and accept the Data Privacy Agreement before logging in.",
+                    Toast.LENGTH_LONG
+                ).show()
+                showPrivacyDialog()
                 return@setOnClickListener
             }
 
@@ -87,13 +115,11 @@ class LoginActivity : AppCompatActivity() {
                 finish()
             }
         } catch (e: Exception) {
-            android.util.Log.e("Login", "Login failed", e)
+            Log.e("Login", "Login failed", e)
             Toast.makeText(this, "Error: ${e.message}", Toast.LENGTH_LONG).show()
         }
     }
 
-    // Your database has no gender column, so the title is chosen by faculty ID.
-// FAC2026-002 = Deserie Robles, FAC2026-005 = Cindy Ostonal
     private fun facultyTitle(facultyId: String): String =
         if (facultyId in setOf("FAC2026-002", "FAC2026-005")) "Ma'am" else "Sir"
 

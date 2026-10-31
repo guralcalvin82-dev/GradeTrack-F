@@ -116,6 +116,55 @@ class DatabaseHelper(context: Context) :
             if (!columns.contains("image_uri")) {
                 db.execSQL("ALTER TABLE $TABLE_USERS ADD COLUMN image_uri TEXT")
             }
+            db.execSQL(
+                """
+                UPDATE $TABLE_USERS 
+                SET department = 'Information Systems' 
+                WHERE role = 'FACULTY' AND (department IS NULL OR TRIM(department) = '')
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                UPDATE $TABLE_SUBJECTS 
+                SET units = 2 
+                WHERE UPPER(code) LIKE 'PE%' OR UPPER(subject_name) LIKE '%PATHFIT%'
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                UPDATE $TABLE_USERS 
+                SET password = '123' 
+                WHERE role = 'STUDENT' AND (password = 'student123' OR password IS NULL OR password = '')
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                UPDATE $TABLE_USERS 
+                SET course = 'BSIS', section = '2C' 
+                WHERE role = 'STUDENT' AND (UPPER(course) LIKE '%2C%' OR UPPER(section) LIKE '%2C%')
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                UPDATE $TABLE_USERS 
+                SET course = 'BSIS', section = '2A' 
+                WHERE role = 'STUDENT' AND (UPPER(course) LIKE '%2A%' OR UPPER(section) LIKE '%2A%')
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                UPDATE $TABLE_USERS 
+                SET course = 'BSIS', section = '2B' 
+                WHERE role = 'STUDENT' AND (UPPER(course) LIKE '%2B%' OR UPPER(section) LIKE '%2B%')
+                """.trimIndent()
+            )
+            db.execSQL(
+                """
+                UPDATE $TABLE_USERS 
+                SET course = 'BSIS', section = '2D' 
+                WHERE role = 'STUDENT' AND (UPPER(course) LIKE '%2D%' OR UPPER(section) LIKE '%2D%')
+                """.trimIndent()
+            )
         } catch (e: Exception) {
             Log.e("DatabaseHelper", "Error checking/updating table columns", e)
         }
@@ -263,18 +312,19 @@ class DatabaseHelper(context: Context) :
         val faculty = listOf(
             Triple("FAC2026-001", "Kyle Joseph Fabian", "Information Technology"),
             Triple("FAC2026-002", "Deserie Robles", "Information Systems"),
-            Triple("FAC2026-003", "Miguel Don Gatchalian", "Information Technology"),
-            Triple("FAC2026-004", "Eroll Reyes", null),
-            Triple("FAC2026-005", "Cindy Ostonal", null),
-            Triple("FAC2026-006", "Christian Paradero", null),
-            Triple("FAC2026-007", "Carl Ashlie Ramos", null)
+            Triple("FAC2026-003", "Miguel Don Gatchalian", "Information Systems"),
+            Triple("FAC2026-004", "Eroll Reyes", "Information Systems"),
+            Triple("FAC2026-005", "Cindy Ostonal", "Information Systems"),
+            Triple("FAC2026-006", "Christian Paradero", "Information Systems"),
+            Triple("FAC2026-007", "Carl Ashlie Ramos", "Information Systems")
         )
         for ((id, name, dept) in faculty) {
-            insertUser(db, id, name, "FACULTY", "", "", "Instructor", "faculty123")
+            val d = dept ?: "Information Systems"
+            insertUser(db, id, name, "FACULTY", d, "", "Instructor", "faculty123", d)
             val values = ContentValues().apply {
                 put("teacher_id", id)
                 put("name", name)
-                put("department", dept)
+                put("department", d)
                 put("position", "Instructor")
             }
             db.insert(TABLE_TEACHERS, null, values)
@@ -309,10 +359,11 @@ class DatabaseHelper(context: Context) :
         code: String,
         name: String
     ) {
+        val u = if (code.startsWith("PE", ignoreCase = true) || name.contains("PATHFIT", ignoreCase = true)) 2 else 3
         val values = ContentValues().apply {
             put("code", code)
             put("subject_name", name)
-            put("units", 3)
+            put("units", u)
         }
 
         db.insertWithOnConflict(
@@ -321,11 +372,15 @@ class DatabaseHelper(context: Context) :
             values,
             SQLiteDatabase.CONFLICT_IGNORE
         )
+
+        val updateCv = ContentValues().apply { put("units", u) }
+        db.update(TABLE_SUBJECTS, updateCv, "code = ?", arrayOf(code))
     }
 
     private fun insertUser(
         db: SQLiteDatabase, userId: String, name: String, role: String,
-        course: String, section: String, position: String, password: String
+        course: String, section: String, position: String, password: String,
+        department: String = ""
     ) {
         val values = ContentValues().apply {
             put("user_id", userId)
@@ -335,6 +390,7 @@ class DatabaseHelper(context: Context) :
             put("section", section)
             put("position", position)
             put("password", password)
+            if (department.isNotBlank()) put("department", department)
         }
         db.insert(TABLE_USERS, null, values)
     }
@@ -395,7 +451,7 @@ class DatabaseHelper(context: Context) :
 
     private fun insertStudents(db: SQLiteDatabase) {
         for ((id, name) in studentSeedList()) {
-            insertUser(db, id, name, "STUDENT", SEED_COURSE, SEED_SECTION, "", "student123")
+            insertUser(db, id, name, "STUDENT", SEED_COURSE, SEED_SECTION, "", "123")
         }
     }
 
@@ -413,7 +469,7 @@ class DatabaseHelper(context: Context) :
             val exists = c.moveToFirst()
             c.close()
             if (!exists) {
-                insertUser(db, newId, name, "STUDENT", SEED_COURSE, SEED_SECTION, "", "student123")
+                insertUser(db, newId, name, "STUDENT", SEED_COURSE, SEED_SECTION, "", "123")
             }
         }
         seedStudentSchedules(db) // i-link ang bagong dagdag sa schedule ng section
@@ -663,9 +719,14 @@ class DatabaseHelper(context: Context) :
 
     fun getSubjectUnits(code: String): Int {
         val cursor = readableDatabase.rawQuery(
-            "SELECT units FROM $TABLE_SUBJECTS WHERE code = ?", arrayOf(code)
+            "SELECT units, subject_name FROM $TABLE_SUBJECTS WHERE code = ?", arrayOf(code)
         )
-        val units = if (cursor.moveToFirst()) cursor.getInt(0) else 3
+        var units = if (code.startsWith("PE", ignoreCase = true)) 2 else 3
+        if (cursor.moveToFirst()) {
+            val dbUnits = cursor.getInt(0)
+            val name = cursor.getString(1) ?: ""
+            units = if (code.startsWith("PE", ignoreCase = true) || name.contains("PATHFit", ignoreCase = true)) 2 else dbUnits
+        }
         cursor.close()
         return units
     }
@@ -1414,24 +1475,40 @@ class DatabaseHelper(context: Context) :
     data class DeptStudentCount(val department: String, val count: Int)
 
     fun getDepartmentStudentCounts(): List<DeptStudentCount> {
-        val list = mutableListOf<DeptStudentCount>()
+        val map = linkedMapOf(
+            "BSIS 2C" to 0,
+            "BSIS 2A" to 0,
+            "BSIS 2B" to 0,
+            "BSIS 2D" to 0
+        )
         val db = readableDatabase
         db.rawQuery(
             """
-            SELECT CASE WHEN UPPER(TRIM(COALESCE(course,''))) = '' THEN 'Unassigned' ELSE UPPER(TRIM(course)) END AS dept,
-                   COUNT(*) AS student_count
+            SELECT COALESCE(course,''), COALESCE(section,''), COUNT(*) AS student_count
             FROM $TABLE_USERS
             WHERE role = 'STUDENT'
-            GROUP BY dept
-            ORDER BY student_count DESC, dept ASC
+            GROUP BY course, section
             """.trimIndent(),
             null
         ).use { cursor ->
             while (cursor.moveToNext()) {
-                list.add(DeptStudentCount(cursor.getString(0), cursor.getInt(1)))
+                val rawCourse = cursor.getString(0) ?: ""
+                val rawSection = cursor.getString(1) ?: ""
+                val count = cursor.getInt(2)
+
+                val combined = "$rawCourse $rawSection".uppercase()
+                val canonicalKey = when {
+                    combined.contains("2A") -> "BSIS 2A"
+                    combined.contains("2B") -> "BSIS 2B"
+                    combined.contains("2C") -> "BSIS 2C"
+                    combined.contains("2D") -> "BSIS 2D"
+                    else -> combined.trim().ifBlank { "Unassigned" }
+                }
+
+                map[canonicalKey] = (map[canonicalKey] ?: 0) + count
             }
         }
-        return list
+        return map.map { DeptStudentCount(it.key, it.value) }
     }
 
     data class AccountSummaryCounts(val totalStudents: Int, val totalFaculty: Int, val totalAdmins: Int, val totalUsers: Int)
@@ -1566,16 +1643,24 @@ class DatabaseHelper(context: Context) :
 
         if (role.equals("FACULTY", ignoreCase = true)) {
             val teacherValues = ContentValues().apply {
+                put("teacher_id", userId)
                 put("name", name)
                 if (email.isNotBlank()) put("email", email)
                 put("department", finalDept)
                 if (position.isNotBlank()) put("position", position)
             }
-            db.update(TABLE_TEACHERS, teacherValues, "LOWER(teacher_id) = LOWER(?)", arrayOf(userId))
+            db.insertWithOnConflict(TABLE_TEACHERS, null, teacherValues, SQLiteDatabase.CONFLICT_REPLACE)
+        }
+
+        if (role.equals("STUDENT", ignoreCase = true)) {
+            linkStudentToSectionClasses(userId)
         }
 
         if (rows > 0) return true
         val res = db.insertWithOnConflict(TABLE_USERS, null, values, SQLiteDatabase.CONFLICT_REPLACE)
+        if (res != -1L && role.equals("STUDENT", ignoreCase = true)) {
+            linkStudentToSectionClasses(userId)
+        }
         return res != -1L
     }
 

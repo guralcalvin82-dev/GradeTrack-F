@@ -16,30 +16,11 @@
         android:paddingTop="32dp"
         android:paddingBottom="24dp">
 
-        <!-- Transparent Back Action Button on the Left -->
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnBack"
-            style="@style/Widget.MaterialComponents.Button.TextButton"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:layout_alignParentStart="true"
-            android:layout_centerVertical="true"
-            android:layout_marginEnd="12dp"
-            android:insetTop="0dp"
-            android:insetBottom="0dp"
-            android:padding="0dp"
-            app:icon="@drawable/ic_arrow_back"
-            app:iconGravity="textStart"
-            app:iconTint="@android:color/white"
-            app:backgroundTint="@android:color/transparent"
-            app:rippleColor="#33FFFFFF"
-            tools:ignore="SpeakableTextPresentCheck" />
-
-        <!-- Header Titles to the Right of the Back Button -->
+        <!-- Header Titles -->
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_toEndOf="@id/btnBack"
+            android:layout_alignParentStart="true"
             android:layout_centerVertical="true"
             android:orientation="vertical">
 
@@ -47,11 +28,17 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
-                android:text="Manage Subjects"
+                android:text="Faculty"
                 android:textColor="@android:color/white"
                 android:textSize="22sp"
                 android:textStyle="bold" />
 
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Manage Subjects"
+                android:textColor="@color/text_light"
+                android:textSize="12sp" />
         </LinearLayout>
     </RelativeLayout>
 

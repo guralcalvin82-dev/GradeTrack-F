@@ -77,7 +77,7 @@ class ManageSubjectsActivity : AppCompatActivity() {
             loadSchedules()
         }
 
-        findViewById<View>(R.id.btnBack).setOnClickListener {
+        findViewById<View>(R.id.btnBack)?.setOnClickListener {
             finish()
         }
 

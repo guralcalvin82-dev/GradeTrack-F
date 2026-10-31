@@ -40,21 +40,6 @@
                 android:textColor="@color/text_light"
                 android:textSize="12sp" />
         </LinearLayout>
-
-        <com.google.android.material.button.MaterialButton
-            android:id="@+id/btnLogout"
-            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentEnd="true"
-            android:layout_centerVertical="true"
-            android:text="Logout"
-            android:textColor="@android:color/white"
-            android:textSize="12sp"
-            android:textStyle="bold"
-            app:cornerRadius="12dp"
-            app:strokeColor="@color/border_color"
-            app:strokeWidth="1dp" />
     </RelativeLayout>
 
     <!-- Main Dynamic Content Container -->
@@ -222,10 +207,19 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_marginTop="2dp"
-                            android:layout_marginBottom="14dp"
+                            android:layout_marginBottom="12dp"
                             android:text="Enrolled student distribution across academic programs"
                             android:textColor="@color/text_secondary"
                             android:textSize="12sp" />
+
+                        <Spinner
+                            android:id="@+id/spSectionFilter"
+                            android:layout_width="match_parent"
+                            android:layout_height="44dp"
+                            android:layout_marginBottom="12dp"
+                            android:background="@drawable/bg_spinner_container"
+                            android:paddingHorizontal="12dp"
+                            android:spinnerMode="dropdown" />
 
                         <LinearLayout
                             android:id="@+id/layoutDeptStatsContainer"
@@ -282,6 +276,20 @@
                         app:backgroundTint="@color/primary_dark"
                         app:cornerRadius="12dp" />
                 </LinearLayout>
+
+                <!-- Logout Button at the bottom -->
+                <com.google.android.material.button.MaterialButton
+                    android:id="@+id/btnLogout"
+                    android:layout_width="match_parent"
+                    android:layout_height="54dp"
+                    android:layout_marginTop="24dp"
+                    android:gravity="center"
+                    android:text="Logout Account"
+                    android:textColor="@android:color/white"
+                    android:textSize="14sp"
+                    android:textStyle="bold"
+                    app:backgroundTint="#EF4444"
+                    app:cornerRadius="14dp" />
 
             </LinearLayout>
         </ScrollView>

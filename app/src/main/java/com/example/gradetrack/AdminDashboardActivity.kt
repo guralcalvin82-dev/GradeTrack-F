@@ -51,6 +51,7 @@ class AdminDashboardActivity : AppCompatActivity() {
     private lateinit var tvCountFaculty: TextView
     private lateinit var tvCountTotalAccounts: TextView
     private lateinit var layoutDeptStatsContainer: LinearLayout
+    private lateinit var spSectionFilter: Spinner
     private lateinit var btnQuickAddFaculty: MaterialButton
     private lateinit var btnQuickAddStudent: MaterialButton
 
@@ -135,8 +136,21 @@ class AdminDashboardActivity : AppCompatActivity() {
         tvCountFaculty = findViewById(R.id.tvCountFaculty)
         tvCountTotalAccounts = findViewById(R.id.tvCountTotalAccounts)
         layoutDeptStatsContainer = findViewById(R.id.layoutDeptStatsContainer)
+        spSectionFilter = findViewById(R.id.spSectionFilter)
         btnQuickAddFaculty = findViewById(R.id.btnQuickAddFaculty)
         btnQuickAddStudent = findViewById(R.id.btnQuickAddStudent)
+
+        val sectionOptions = listOf("BSIS 2C", "BSIS 2A", "BSIS 2B", "BSIS 2D", "All Sections")
+        val sectionAdapter = ArrayAdapter(this, android.R.layout.simple_spinner_item, sectionOptions).apply {
+            setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        }
+        spSectionFilter.adapter = sectionAdapter
+        spSectionFilter.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
+                loadOverviewData()
+            }
+            override fun onNothingSelected(parent: AdapterView<*>?) {}
+        }
 
         // Students Tab Views
         etSearchStudentAdmin = findViewById(R.id.etSearchStudentAdmin)
@@ -276,9 +290,19 @@ class AdminDashboardActivity : AppCompatActivity() {
 
         layoutDeptStatsContainer.removeAllViews()
 
-        val deptCounts = dbHelper.getDepartmentStudentCounts()
+        val selectedSection = spSectionFilter.selectedItem?.toString() ?: "BSIS 2C"
+        val allCounts = dbHelper.getDepartmentStudentCounts()
 
-        if (deptCounts.isEmpty()) {
+        val displayList = if (selectedSection == "All Sections") {
+            allCounts
+        } else {
+            val selectedItem = allCounts.find { it.department.equals(selectedSection, ignoreCase = true) }
+                ?: DatabaseHelper.DeptStudentCount(selectedSection, 0)
+            val others = allCounts.filter { !it.department.equals(selectedSection, ignoreCase = true) }
+            listOf(selectedItem) + others
+        }
+
+        if (displayList.isEmpty()) {
             val emptyView = TextView(this).apply {
                 text = "No students enrolled in any department."
                 setTextColor(getColor(R.color.text_secondary))
@@ -289,7 +313,7 @@ class AdminDashboardActivity : AppCompatActivity() {
             return
         }
 
-        for (dept in deptCounts) {
+        for (dept in displayList) {
             val row = LinearLayout(this).apply {
                 orientation = LinearLayout.HORIZONTAL
                 gravity = Gravity.CENTER_VERTICAL
@@ -707,8 +731,26 @@ class AdminDashboardActivity : AppCompatActivity() {
             isEnabled = !(isEdit && existingUser?.role?.equals("ADMIN", ignoreCase = true) == true)
         }
 
+        val initialRole = existingUser?.role ?: defaultRole
+        val isFacultyInitially = initialRole.equals("FACULTY", ignoreCase = true)
+        val isStudentInitially = initialRole.equals("STUDENT", ignoreCase = true)
+
+        val tvSectionLabel = TextView(this).apply {
+            text = "Student Section:"
+            visibility = if (isStudentInitially) View.VISIBLE else View.GONE
+        }
+
+        val studentSections = arrayOf("BSIS 2C", "BSIS 2A", "BSIS 2B", "BSIS 2D")
+        val spStudentSection = Spinner(this).apply {
+            adapter = ArrayAdapter(this@AdminDashboardActivity, android.R.layout.simple_spinner_dropdown_item, studentSections)
+            val initialSec = existingUser?.section.orEmpty().ifBlank { prefilledSection }.ifBlank { "BSIS 2C" }
+            val matchIdx = studentSections.indexOfFirst { it.contains(initialSec, ignoreCase = true) }
+            if (matchIdx >= 0) setSelection(matchIdx) else setSelection(0)
+            visibility = if (isStudentInitially) View.VISIBLE else View.GONE
+        }
+
         val etUserId = EditText(this).apply {
-            hint = "User ID (e.g. MA-202601 or FAC2026-001)"
+            hint = "User ID (e.g. MA-25010999 or FAC2026-001)"
             setText(existingUser?.userId ?: "")
             isEnabled = !isEdit
         }
@@ -719,23 +761,16 @@ class AdminDashboardActivity : AppCompatActivity() {
         }
 
         val etCourse = EditText(this).apply {
-            hint = "Course (e.g. BSIS, BSIT)"
+            hint = "Course (e.g. BSIS)"
             setText(existingUser?.course ?: "BSIS")
+            visibility = if (isFacultyInitially) View.VISIBLE else View.GONE
         }
 
         val etDepartment = EditText(this).apply {
-            hint = "Department (e.g. Information Technology, Information Systems)"
+            hint = "Department"
             setText(if (existingUser?.department.isNullOrBlank()) existingUser?.course ?: "" else existingUser?.department ?: "")
+            visibility = if (isFacultyInitially) View.VISIBLE else View.GONE
         }
-
-        val etSection = EditText(this).apply {
-            hint = "Section (e.g. BSIS 2C, 2B)"
-            setText(existingUser?.section ?: prefilledSection)
-        }
-
-        // Position field is STRICTLY for Faculty accounts only!
-        val initialRole = existingUser?.role ?: defaultRole
-        val isFacultyInitially = initialRole.equals("FACULTY", ignoreCase = true)
 
         val etPosition = EditText(this).apply {
             hint = "Faculty Position (e.g. Instructor, Chair, Dean)"
@@ -746,7 +781,15 @@ class AdminDashboardActivity : AppCompatActivity() {
         spRole.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedRole = spRole.selectedItem.toString()
-                etPosition.visibility = if (selectedRole.equals("FACULTY", ignoreCase = true)) View.VISIBLE else View.GONE
+                val isFac = selectedRole.equals("FACULTY", ignoreCase = true)
+                val isStu = selectedRole.equals("STUDENT", ignoreCase = true)
+
+                etPosition.visibility = if (isFac) View.VISIBLE else View.GONE
+                etCourse.visibility = if (isFac) View.VISIBLE else View.GONE
+                etDepartment.visibility = if (isFac) View.VISIBLE else View.GONE
+
+                tvSectionLabel.visibility = if (isStu) View.VISIBLE else View.GONE
+                spStudentSection.visibility = if (isStu) View.VISIBLE else View.GONE
             }
 
             override fun onNothingSelected(parent: AdapterView<*>?) {}
@@ -768,17 +811,18 @@ class AdminDashboardActivity : AppCompatActivity() {
         }
 
         val etPassword = EditText(this).apply {
-            hint = "Password"
-            setText(existingUser?.password ?: "1234")
+            hint = "Password (default: 123)"
+            setText(existingUser?.password ?: "123")
         }
 
         layout.addView(tvRoleLabel)
         layout.addView(spRole)
+        layout.addView(tvSectionLabel)
+        layout.addView(spStudentSection)
         layout.addView(etUserId)
         layout.addView(etName)
         layout.addView(etCourse)
         layout.addView(etDepartment)
-        layout.addView(etSection)
         layout.addView(etPosition) // Position field is ONLY visible when Role is FACULTY
         layout.addView(etContactNum)
         layout.addView(etAddress)
@@ -807,15 +851,23 @@ class AdminDashboardActivity : AppCompatActivity() {
                 val userId = etUserId.text.toString().trim()
                 val name = etName.text.toString().trim()
                 val role = spRole.selectedItem as String
-                val course = etCourse.text.toString().trim()
-                val dept = etDepartment.text.toString().trim()
-                val section = etSection.text.toString().trim()
+
+                val (course, section, dept) = if (role.equals("STUDENT", ignoreCase = true)) {
+                    val fullSec = spStudentSection.selectedItem?.toString() ?: "BSIS 2C"
+                    val secSuffix = fullSec.split(" ").lastOrNull() ?: "2C"
+                    Triple("BSIS", secSuffix, fullSec)
+                } else {
+                    val c = etCourse.text.toString().trim().ifBlank { "BSIS" }
+                    val d = etDepartment.text.toString().trim()
+                    Triple(c, "", d.ifBlank { c })
+                }
+
                 // Position is clear if role is not FACULTY
                 val position = if (role.equals("FACULTY", ignoreCase = true)) etPosition.text.toString().trim() else ""
                 val contactNum = etContactNum.text.toString().trim()
                 val address = etAddress.text.toString().trim()
                 val email = etEmail.text.toString().trim()
-                val password = etPassword.text.toString().trim()
+                val password = etPassword.text.toString().trim().ifBlank { "123" }
 
                 if (userId.isEmpty() || name.isEmpty() || password.isEmpty()) {
                     Toast.makeText(this, "User ID, Name, and Password are required.", Toast.LENGTH_SHORT).show()

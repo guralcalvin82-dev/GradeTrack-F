@@ -23,7 +23,7 @@ class ManageStudentsActivity : AppCompatActivity() {
         dbHelper = DatabaseHelper(this)
         tlStudents = findViewById(R.id.tlStudents)
 
-        findViewById<Button>(R.id.btnBack).setOnClickListener { finish() }
+        findViewById<Button>(R.id.btnBack)?.setOnClickListener { finish() }
 
         findViewById<Button>(R.id.btnAddStudent).setOnClickListener {
             showStudentDialog(null)

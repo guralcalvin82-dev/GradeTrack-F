@@ -2,20 +2,21 @@ package com.example.gradetrack
 
 import android.app.Activity
 import android.content.Intent
+import android.content.res.ColorStateList
 import android.view.View
+import android.view.ViewGroup
+import android.widget.ImageView
+import android.widget.TextView
 
 /**
- * Shared bottom-navigation click handling for the faculty screens.
- * Call FacultyBottomNavHelper.setup(this, facultyId, Tab.X) once in onCreate of each screen,
- * after setContentView().
- *
- * On the faculty dashboard (which has the bar but no active tab), pass null as `current`.
+ * Shared bottom-navigation click handling and styling for faculty screens.
  */
 object FacultyBottomNavHelper {
 
-    enum class Tab { STUDENTS, SUBJECTS, GRADES, SCHEDULE, PROFILE }
+    enum class Tab { HOME, STUDENTS, SUBJECTS, GRADES, SCHEDULE, PROFILE }
 
     fun setup(activity: Activity, facultyId: String?, current: Tab?) {
+        bind(activity, R.id.btnFacultyHome, Tab.HOME, FacultyDashboardActivity::class.java, facultyId, current)
         bind(activity, R.id.btnManageStudents, Tab.STUDENTS, ManageStudentsActivity::class.java, facultyId, current)
         bind(activity, R.id.btnManageSubjects, Tab.SUBJECTS, ManageSubjectsActivity::class.java, facultyId, current)
         bind(activity, R.id.btnManageGrade, Tab.GRADES, GradeManagementActivity::class.java, facultyId, current)
@@ -32,8 +33,26 @@ object FacultyBottomNavHelper {
         current: Tab?
     ) {
         val view = activity.findViewById<View>(viewId) ?: return
+
+        val activeColor = activity.getColor(R.color.primary)
+        val inactiveColor = activity.getColor(R.color.text_secondary)
+        val isSelected = (tab == current)
+
+        val vg = view as? ViewGroup
+        val iv = vg?.getChildAt(0) as? ImageView
+        val tv = vg?.getChildAt(1) as? TextView
+
+        if (iv != null) {
+            iv.imageTintList = ColorStateList.valueOf(if (isSelected) activeColor else inactiveColor)
+            iv.alpha = if (isSelected) 1.0f else 0.75f
+        }
+        if (tv != null) {
+            tv.setTextColor(if (isSelected) activeColor else inactiveColor)
+            tv.alpha = if (isSelected) 1.0f else 0.75f
+        }
+
         view.setOnClickListener {
-            if (tab == current) return@setOnClickListener   // already on this screen
+            if (tab == current) return@setOnClickListener
 
             val intent = Intent(activity, target).apply {
                 putExtra("FACULTY_ID", facultyId)
@@ -42,7 +61,6 @@ object FacultyBottomNavHelper {
             activity.startActivity(intent)
             activity.overridePendingTransition(0, 0)
 
-            // Dashboard stays in the back stack; the tab screens replace each other
             if (current != null) activity.finish()
         }
     }

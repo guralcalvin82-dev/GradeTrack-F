@@ -7,7 +7,7 @@
     android:background="@color/background"
     android:orientation="vertical">
 
-    <!-- Header -->
+    <!-- Executive Header Section -->
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -25,11 +25,19 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="2dp"
-                android:text="Faculty &amp; Admin"
+                android:text="Faculty"
                 android:textColor="@android:color/white"
                 android:textSize="22sp"
                 android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tvWelcomeFaculty"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Faculty Portal"
+                android:textColor="@color/text_light"
+                android:textSize="12sp" />
 
         </LinearLayout>
     </RelativeLayout>
@@ -46,11 +54,11 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Featured Overview Card -->
+            <!-- System Status Card -->
             <androidx.cardview.widget.CardView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="24dp"
+                android:layout_marginBottom="16dp"
                 app:cardBackgroundColor="@color/primary"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="4dp">
@@ -90,6 +98,280 @@
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 
+            <!-- Faculty Quick Summary Row -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                android:orientation="horizontal">
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="6dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/card_bg"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvCountHandledSubjects"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/primary_dark"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="SUBJECTS"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+                <androidx.cardview.widget.CardView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="6dp"
+                    android:layout_weight="1"
+                    app:cardBackgroundColor="@color/card_bg"
+                    app:cardCornerRadius="14dp"
+                    app:cardElevation="2dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:id="@+id/tvCountTotalClasses"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="0"
+                            android:textColor="@color/primary_dark"
+                            android:textSize="22sp"
+                            android:textStyle="bold" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="2dp"
+                            android:text="SCHEDULED CLASSES"
+                            android:textColor="@color/text_secondary"
+                            android:textSize="10sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+                </androidx.cardview.widget.CardView>
+
+            </LinearLayout>
+
+            <!-- Quick Management Shortcuts Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="24dp"
+                app:cardBackgroundColor="@color/card_bg"
+                app:cardCornerRadius="18dp"
+                app:cardElevation="2dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="18dp">
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginBottom="12dp"
+                        android:letterSpacing="0.08"
+                        android:text="QUICK SHORTCUTS"
+                        android:textColor="@color/primary_dark"
+                        android:textSize="11sp"
+                        android:textStyle="bold" />
+
+                    <LinearLayout
+                        android:id="@+id/btnQuickStudents"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_students"
+                            app:tint="@color/primary_dark"
+                            tools:ignore="ContentDescription" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Manage Students"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border_color" />
+
+                    <LinearLayout
+                        android:id="@+id/btnQuickSubjects"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_subjects"
+                            app:tint="@color/primary_dark"
+                            tools:ignore="ContentDescription" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Manage Subjects"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border_color" />
+
+                    <LinearLayout
+                        android:id="@+id/btnQuickGrades"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_grades"
+                            app:tint="@color/primary_dark"
+                            tools:ignore="ContentDescription" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Grade Management"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border_color" />
+
+                    <LinearLayout
+                        android:id="@+id/btnQuickSchedule"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_schedule"
+                            app:tint="@color/primary_dark"
+                            tools:ignore="ContentDescription" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="Faculty Schedule"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/border_color" />
+
+                    <LinearLayout
+                        android:id="@+id/btnQuickProfile"
+                        android:layout_width="match_parent"
+                        android:layout_height="48dp"
+                        android:background="?attr/selectableItemBackground"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingHorizontal="8dp">
+
+                        <ImageView
+                            android:layout_width="22dp"
+                            android:layout_height="22dp"
+                            android:layout_marginEnd="14dp"
+                            android:src="@drawable/ic_profile"
+                            app:tint="@color/primary_dark"
+                            tools:ignore="ContentDescription" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="1"
+                            android:text="My Profile"
+                            android:textColor="@color/text_primary"
+                            android:textSize="14sp"
+                            android:textStyle="bold" />
+                    </LinearLayout>
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
             <!-- Logout Button -->
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btnLogout"
@@ -106,7 +388,7 @@
         </LinearLayout>
     </ScrollView>
 
-    <!-- Bottom navigation bar (management modules) -->
+    <!-- Bottom navigation bar -->
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
@@ -117,7 +399,35 @@
         android:layout_height="64dp"
         android:background="@color/card_bg"
         android:orientation="horizontal"
-        android:weightSum="5">
+        android:weightSum="6">
+
+        <LinearLayout
+            android:id="@+id/btnFacultyHome"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:background="?attr/selectableItemBackgroundBorderless"
+            android:clickable="true"
+            android:focusable="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="22dp"
+                android:layout_height="22dp"
+                android:src="@drawable/ic_home"
+                app:tint="@color/primary"
+                tools:ignore="ContentDescription" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="2dp"
+                android:text="Home"
+                android:textColor="@color/primary"
+                android:textSize="10sp"
+                android:textStyle="bold" />
+        </LinearLayout>
 
         <LinearLayout
             android:id="@+id/btnManageStudents"
@@ -131,10 +441,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_students"
-                app:tint="@color/primary"
+                app:tint="@color/text_secondary"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -142,8 +452,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Students"
-                android:textColor="@color/primary"
-                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -159,10 +469,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_subjects"
-                app:tint="@color/primary"
+                app:tint="@color/text_secondary"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -170,8 +480,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Subjects"
-                android:textColor="@color/primary"
-                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -187,10 +497,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_grades"
-                app:tint="@color/primary"
+                app:tint="@color/text_secondary"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -198,8 +508,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Grades"
-                android:textColor="@color/primary"
-                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -215,10 +525,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_schedule"
-                app:tint="@color/primary"
+                app:tint="@color/text_secondary"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -226,8 +536,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Schedule"
-                android:textColor="@color/primary"
-                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
@@ -243,10 +553,10 @@
             android:orientation="vertical">
 
             <ImageView
-                android:layout_width="24dp"
-                android:layout_height="24dp"
+                android:layout_width="22dp"
+                android:layout_height="22dp"
                 android:src="@drawable/ic_profile"
-                app:tint="@color/primary"
+                app:tint="@color/text_secondary"
                 tools:ignore="ContentDescription" />
 
             <TextView
@@ -254,8 +564,8 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="2dp"
                 android:text="Profile"
-                android:textColor="@color/primary"
-                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:textSize="10sp"
                 android:textStyle="bold" />
         </LinearLayout>
 
